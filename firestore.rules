@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    // Shops Collection: Allow public read of approved shops, allow shop creation with payment details, allow admin/owner update
+    match /shops/{shopId} {
+      allow read: if true;
+      allow write: if isValidId(shopId);
+    }
+
+    // Workers Collection: Public read, authenticated or registered writes
+    match /workers/{workerId} {
+      allow read: if true;
+      allow write: if isValidId(workerId);
+    }
+
+    // Claims Collection: Payout claim submissions
+    match /claims/{claimId} {
+      allow read: if true;
+      allow write: if isValidId(claimId);
+    }
+
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

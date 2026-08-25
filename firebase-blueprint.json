@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "Shop": {
+      "title": "Shop",
+      "description": "Rural and village shop details, products, offers, payment records, and owner profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "marathiName": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "mobile": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "email": { "type": "string" },
+        "category": { "type": "string" },
+        "district": { "type": "string" },
+        "taluka": { "type": "string" },
+        "villageOrCity": { "type": "string" },
+        "fullAddress": { "type": "string" },
+        "timing": { "type": "string" },
+        "isOpen": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "totalReviews": { "type": "number" },
+        "isPaid": { "type": "boolean" },
+        "approvalStatus": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "isDisabled": { "type": "boolean" }
+      },
+      "required": ["id", "name", "marathiName", "ownerName", "mobile", "category", "district", "villageOrCity"]
+    },
+    "Worker": {
+      "title": "Worker",
+      "description": "Skilled village artisans, electricians, plumbers, drivers, and workers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "marathiName": { "type": "string" },
+        "profession": { "type": "string" },
+        "mobile": { "type": "string" },
+        "district": { "type": "string" },
+        "villageOrCity": { "type": "string" },
+        "experience": { "type": "string" },
+        "rating": { "type": "number" },
+        "approvalStatus": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      },
+      "required": ["id", "name", "profession", "mobile", "district", "villageOrCity"]
+    },
+    "ClaimRequest": {
+      "title": "ClaimRequest",
+      "description": "Referral commission claim request by users/shopkeepers.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "referrerShopId": { "type": "string" },
+        "referrerName": { "type": "string" },
+        "upiId": { "type": "string" },
+        "mobile": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "paid", "rejected"] }
+      },
+      "required": ["id", "referrerShopId", "referrerName", "upiId", "amount", "status"]
+    }
+  },
+  "firestore": {
+    "/shops/{shopId}": {
+      "schema": "Shop",
+      "description": "Public directory of village shops, offers, and contact info"
+    },
+    "/workers/{workerId}": {
+      "schema": "Worker",
+      "description": "Directory of local skilled workers and craftsmen"
+    },
+    "/claims/{claimId}": {
+      "schema": "ClaimRequest",
+      "description": "User referral payout commission claims"
+    }
+  }
+}
