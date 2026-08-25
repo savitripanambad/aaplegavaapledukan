@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Phone, MapPin, Star, Sparkles, CheckCircle, Clock, Heart, ArrowRight } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Star, Sparkles, CheckCircle, Clock, Heart, ArrowRight, Newspaper, Award } from 'lucide-react';
 import { Shop } from '../types';
 import { openWhatsAppEnquiry, openPhoneCall } from '../utils/helpers';
 
@@ -97,6 +97,34 @@ export const ShopCard: React.FC<ShopCardProps> = ({
             <span className="font-bold text-slate-700">{isMarathi ? 'पत्ता:' : 'Addr:'}</span>
             <span className="truncate">{shop.landmark ? `${shop.landmark}, ` : ''}{shop.fullAddress}</span>
           </p>
+
+          {/* Journalist Media Badge on Card */}
+          {(shop.category === 'patrakar' || shop.newspaperName || shop.newsChannelName) && (
+            <div className="mt-2.5 p-2 bg-rose-50 rounded-xl border border-rose-200 flex flex-wrap items-center gap-1.5 text-[11px]">
+              <span className="bg-rose-600 text-white font-black px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1">
+                <Newspaper className="w-3 h-3" />
+                {isMarathi ? 'प्रेस' : 'Press'}
+              </span>
+              {shop.newspaperName && (
+                <span className="font-bold text-rose-950 truncate max-w-[140px]">
+                  {shop.newspaperName}
+                </span>
+              )}
+              {shop.newsChannelName && (
+                <span className="text-rose-700 font-semibold truncate max-w-[120px]">
+                  • {shop.newsChannelName}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Specialization Tag on Card */}
+          {shop.serviceSpecialization && (
+            <div className="mt-2 p-1.5 bg-indigo-50/80 rounded-lg border border-indigo-100 flex items-center gap-1 text-[11px] text-indigo-950 font-semibold">
+              <Award className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span className="truncate">{shop.serviceSpecialization}</span>
+            </div>
+          )}
 
           {/* Timings */}
           <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1.5 font-medium">

@@ -156,6 +156,13 @@ export interface Shop {
   referralEarnings?: number; // ₹1 per referred shop
   referralCount?: number;
   claimRequests?: ClaimRequest[];
+  // Journalist / Media & Specialized Details
+  newspaperName?: string; // वृत्तपत्र / दैनिक e.g. सकाळ, लोकमत, पुढारी, इ.
+  newsChannelName?: string; // न्यूज चॅनेल / डिजिटल मीडिया e.g. ABP माझा, TV9, युट्यूब न्यूज
+  pressCardNo?: string; // प्रेस कार्ड / RNI नोंदणी क्रमांक
+  newsWhatsappGroupUrl?: string; // स्थानिक बातम्या व्हॉट्सॲप ग्रुप लिंक
+  serviceSpecialization?: string; // विशेष सेवा / तज्ज्ञता e.g. 24 तास ॲम्ब्युलन्स, LIC सल्लागार, पाणी टँकर
+  isFreeListing?: boolean; // मोफत नोंदणी (पत्रकार व समाजमित्र)
 }
 
 export interface PaymentRecord {

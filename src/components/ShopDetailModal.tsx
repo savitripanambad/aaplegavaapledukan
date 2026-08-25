@@ -16,7 +16,11 @@ import {
   ShoppingBag,
   ExternalLink,
   Copy,
-  Check
+  Check,
+  Newspaper,
+  Tv,
+  Radio,
+  Award
 } from 'lucide-react';
 import { Shop, Review, Offer } from '../types';
 import { openWhatsAppEnquiry, openPhoneCall } from '../utils/helpers';
@@ -293,6 +297,89 @@ export const ShopDetailModal: React.FC<ShopDetailModalProps> = ({
               )}
             </div>
           </div>
+
+          {/* JOURNALIST / MEDIA SPECIAL SECTION */}
+          {(shop.category === 'patrakar' || shop.newspaperName || shop.newsChannelName || shop.pressCardNo) && (
+            <div className="p-4 sm:p-5 bg-gradient-to-br from-rose-50 via-white to-pink-50 rounded-2xl border-2 border-rose-200 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-xs">
+                    <Newspaper className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-rose-950">
+                      {isMarathi ? 'वृत्तपत्र व मीडिया प्रतिनिधी माहिती (Press & Media)' : 'Press & Media Details'}
+                    </h3>
+                    <p className="text-[11px] text-rose-700">
+                      {isMarathi ? 'गावातील बातम्या, सत्कार, कार्यक्रम व समस्यांच्या प्रसिद्धीसाठी संपर्क' : 'Contact for local news coverage & notices'}
+                    </p>
+                  </div>
+                </div>
+
+                <span className="bg-rose-100 text-rose-900 border border-rose-300 font-black text-[10px] px-2.5 py-1 rounded-full">
+                  {isMarathi ? '🎙️ अधिकृत पत्रकार' : 'Official Press'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+                {shop.newspaperName && (
+                  <div className="bg-white p-3 rounded-xl border border-rose-200 shadow-2xs">
+                    <span className="text-[10px] text-slate-500 font-bold block mb-0.5">
+                      {isMarathi ? '📰 दैनिक / वृत्तपत्र:' : '📰 Newspaper:'}
+                    </span>
+                    <span className="font-extrabold text-slate-900 text-sm">{shop.newspaperName}</span>
+                  </div>
+                )}
+
+                {shop.newsChannelName && (
+                  <div className="bg-white p-3 rounded-xl border border-rose-200 shadow-2xs">
+                    <span className="text-[10px] text-slate-500 font-bold block mb-0.5">
+                      {isMarathi ? '📺 न्यूज चॅनेल / डिजिटल:' : '📺 News Channel:'}
+                    </span>
+                    <span className="font-extrabold text-slate-900 text-sm">{shop.newsChannelName}</span>
+                  </div>
+                )}
+
+                {shop.pressCardNo && (
+                  <div className="bg-white p-3 rounded-xl border border-rose-200 shadow-2xs">
+                    <span className="text-[10px] text-slate-500 font-bold block mb-0.5">
+                      {isMarathi ? '🪪 प्रेस कार्ड / RNI क्र:' : '🪪 Press Card No:'}
+                    </span>
+                    <span className="font-mono font-bold text-slate-900">{shop.pressCardNo}</span>
+                  </div>
+                )}
+              </div>
+
+              {shop.newsWhatsappGroupUrl && (
+                <div className="pt-2">
+                  <a
+                    href={shop.newsWhatsappGroupUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white text-xs font-black shadow-md transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>{isMarathi ? 'स्थानिक बातम्यांच्या WhatsApp ग्रुपमध्ये सामील व्हा →' : 'Join WhatsApp News Group →'}</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SPECIALIZED SERVICES HIGHLIGHT */}
+          {shop.serviceSpecialization && (
+            <div className="p-3.5 bg-indigo-50/80 rounded-2xl border border-indigo-200 flex items-start gap-2.5">
+              <Award className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="text-[11px] font-black text-indigo-950 block">
+                  {isMarathi ? '✨ विशेष सुविधा व सेवा (Specialization):' : '✨ Specialization & Services:'}
+                </span>
+                <p className="text-xs text-indigo-900 font-semibold mt-0.5 leading-relaxed">
+                  {shop.serviceSpecialization}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Active Offers & Discounts Section */}
           {shop.offers && shop.offers.length > 0 && (
