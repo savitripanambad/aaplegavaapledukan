@@ -648,10 +648,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <span className="text-slate-500">पत्ता:</span>
                       <span className="font-bold truncate max-w-[220px]">{shop.fullAddress}</span>
                     </div>
+                    {shop.serviceSpecialization && (
+                      <div className="flex items-center justify-between text-indigo-800 bg-indigo-50/70 px-2 py-1 rounded-lg">
+                        <span className="font-semibold">विशेष सेवा:</span>
+                        <span className="font-bold truncate max-w-[200px]">{shop.serviceSpecialization}</span>
+                      </div>
+                    )}
+                    {shop.category === 'patrakar' && (
+                      <div className="p-2 bg-rose-50 rounded-lg space-y-1 text-rose-950 text-[11px] border border-rose-200">
+                        {shop.newspaperName && <div>📰 वृत्तपत्र: <b>{shop.newspaperName}</b></div>}
+                        {shop.newsChannelName && <div>📺 चॅनेल/पोर्टल: <b>{shop.newsChannelName}</b></div>}
+                        {shop.pressCardNo && <div>🪪 प्रेस कार्ड: <b>{shop.pressCardNo}</b></div>}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between text-emerald-800 pt-1 border-t border-slate-200">
                       <span>नोंदणी शुल्क:</span>
-                      <span className="font-black">₹{REGISTRATION_DISCOUNTED_PRICE} (Paid via UPI) ✓</span>
+                      <span className="font-black">
+                        {shop.category === 'patrakar' ? '₹० (पत्रकार मोफत नोंदणी) ✓' : `₹${REGISTRATION_DISCOUNTED_PRICE} (Paid via UPI) ✓`}
+                      </span>
                     </div>
+                    {shop.referredByAgentCode && (
+                      <div className="flex items-center justify-between text-purple-800 bg-purple-50 px-2 py-0.5 rounded">
+                        <span>रेफरल एजंट कोड:</span>
+                        <span className="font-mono font-bold">{shop.referredByAgentCode}</span>
+                      </div>
+                    )}
                     {shop.gstNumber && (
                       <div className="flex items-center justify-between text-indigo-700">
                         <span>GSTIN:</span>
@@ -1637,6 +1658,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     className="w-full px-3 py-2 rounded-xl border border-slate-300 text-slate-900"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">दुकान प्रवर्ग (Category)</label>
+                <select
+                  value={editingShop.category}
+                  onChange={(e) => {
+                    const catObj = categories.find((c) => c.id === e.target.value);
+                    setEditingShop({
+                      ...editingShop,
+                      category: e.target.value,
+                      categoryLabelMr: catObj ? catObj.nameMr : editingShop.categoryLabelMr,
+                      categoryLabelEn: catObj ? catObj.nameEn : editingShop.categoryLabelEn,
+                    });
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-bold text-slate-900"
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nameMr} ({c.nameEn})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-2">

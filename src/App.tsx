@@ -311,7 +311,36 @@ export default function App() {
     syncShopToCloud(updatedShop);
   };
 
-  // Shopkeeper logged in or registered
+  // Shopkeeper newly registered (status is 'pending' approval)
+  const handleShopRegistrationSubmit = (newShop: Shop) => {
+    setShops((prev) => {
+      const exists = prev.some((s) => s.id === newShop.id);
+      return exists ? prev.map((s) => (s.id === newShop.id ? newShop : s)) : [newShop, ...prev];
+    });
+
+    // Credit Agent if registered with valid Agent Referral Code
+    if (newShop.referredByAgentCode && newShop.referredByAgentCode.trim()) {
+      const refCode = newShop.referredByAgentCode.trim().toUpperCase();
+      setAgents((prevAgents) =>
+        prevAgents.map((ag) => {
+          if (ag.referralCode.toUpperCase() === refCode) {
+            const updatedReferrals = (ag.totalReferrals || 0) + 1;
+            const updatedEarnings = calculateAgentEarnings(updatedReferrals);
+            return {
+              ...ag,
+              totalReferrals: updatedReferrals,
+              totalEarnings: updatedEarnings.totalEarnings,
+            };
+          }
+          return ag;
+        })
+      );
+    }
+
+    syncShopToCloud(newShop);
+  };
+
+  // Shopkeeper logged in
   const handleLoginSuccess = (shop: Shop) => {
     setShops((prev) => {
       const exists = prev.some((s) => s.id === shop.id);
@@ -928,6 +957,7 @@ export default function App() {
         <ShopkeeperAuthModal
           onClose={() => setShowAuthModal(false)}
           onLoginSuccess={handleLoginSuccess}
+          onRegisterSubmit={handleShopRegistrationSubmit}
           allShops={shops}
           categories={CATEGORIES}
           districts={DISTRICTS}

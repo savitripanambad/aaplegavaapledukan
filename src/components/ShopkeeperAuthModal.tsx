@@ -1291,7 +1291,7 @@ export const ShopkeeperAuthModal: React.FC<ShopkeeperAuthModalProps> = ({
                   )}
 
                   {/* SPECIALIZED SERVICES HELPER FIELD */}
-                  {['hospital_doctor', 'mandap_catering', 'lic_insurance', 'water_supply', 'classes_academy', 'bank_patasanstha'].includes(shopCategory) && (
+                  {['hospital_doctor', 'mandap_catering', 'lic_insurance', 'water_supply', 'classes_academy', 'bank_patasanstha', 'paan_shop', 'tax_consultant', 'cctv_security'].includes(shopCategory) && (
                     <div className="p-3 bg-indigo-50/70 rounded-2xl border border-indigo-200 space-y-1.5 animate-fadeIn">
                       <label className="block text-[11px] font-black text-indigo-950">
                         {shopCategory === 'hospital_doctor' && (isMarathi ? '🏥 हॉस्पिटल / डॉक्टर विशेष सेवा (Specialization)' : 'Hospital / Doctor Specialization')}
@@ -1300,6 +1300,9 @@ export const ShopkeeperAuthModal: React.FC<ShopkeeperAuthModalProps> = ({
                         {shopCategory === 'water_supply' && (isMarathi ? '💧 टँकर क्षमता व पाणी प्रकार (Water Tanker Capacity)' : 'Tanker Capacity & Water Supply')}
                         {shopCategory === 'classes_academy' && (isMarathi ? '📚 शिकवले जाणारे वर्ग / विषय / भरती (Coaching Courses)' : 'Courses & Competitive Exams')}
                         {shopCategory === 'bank_patasanstha' && (isMarathi ? '🏦 बचत, कर्ज व बँकिंग सेवा (Banking Facilities)' : 'Banking & Loan Services')}
+                        {shopCategory === 'paan_shop' && (isMarathi ? '🍃 पान, स्नॅक्स व थंड पेये विशेष उत्पादने (Paan & Drinks Specials)' : 'Paan, Snacks & Cold Drinks')}
+                        {shopCategory === 'tax_consultant' && (isMarathi ? '📑 टॅक्स, GST, ITR व ऑडिट सल्लागार सेवा (Tax & CA Services)' : 'Tax, GST & Legal Advisory')}
+                        {shopCategory === 'cctv_security' && (isMarathi ? '📹 सीसीटीव्ही, सिक्युरिटी व कॉम्प्युटर सर्व्हिस (CCTV & Security)' : 'CCTV & IT Security Services')}
                       </label>
                       <input
                         type="text"
@@ -1316,7 +1319,13 @@ export const ShopkeeperAuthModal: React.FC<ShopkeeperAuthModalProps> = ({
                             ? (isMarathi ? 'उदा. ५०००/१०००० लिटर पिण्याचे पाणी टँकर, २०L RO जार घरपोच...' : 'e.g. 5000/10000L Drinking Water Tanker...')
                             : shopCategory === 'classes_academy'
                             ? (isMarathi ? 'उदा. ५वी ते १०वी सेमी, ११वी-१२वी सायन्स, पोलीस भरती, MPSC अकॅडमी...' : 'e.g. 5th-10th Semi, 11th-12th Science, Police Bharti...')
-                            : (isMarathi ? 'उदा. दैनिक बचत, सोनेतारण कर्ज, बँक मित्र (AEPS), फिक्स डिपॉझिट...' : 'e.g. Daily Savings, Gold Loan, Micro ATM...')
+                            : shopCategory === 'bank_patasanstha'
+                            ? (isMarathi ? 'उदा. दैनिक बचत, सोनेतारण कर्ज, बँक मित्र (AEPS), फिक्स डिपॉझिट...' : 'e.g. Daily Savings, Gold Loan, Micro ATM...')
+                            : shopCategory === 'paan_shop'
+                            ? (isMarathi ? 'उदा. स्पेशल मसाला व कलकत्ता गोड पान, अमूल आईस्क्रीम, सर्व ब्रँड्स कोल्ड्रिंक्स...' : 'e.g. Masala Paan, Meetha Paan, Ice Creams, Cold Drinks...')
+                            : shopCategory === 'tax_consultant'
+                            ? (isMarathi ? 'उदा. GST रजिस्ट्रेशन, मासिक ITR रिटर्न, उद्योग आधार, शॉप ॲक्ट, बँक लोन प्रोजेक्ट रिपोर्ट...' : 'e.g. GST Registration, ITR Filing, MSME, Project Reports...')
+                            : (isMarathi ? 'उदा. CP Plus / Hikvision HD-IP कॅमेरे, मोबाईल लाईव्ह व्ह्यू, बायोमेट्रिक हजेरी, लॅपटॉप रिपेअर...' : 'e.g. HD/IP CCTV, Live View, Biometric, Laptop Repair...')
                         }
                         className="w-full px-3 py-2 text-xs rounded-xl border border-indigo-300 bg-white text-indigo-950 font-bold"
                       />

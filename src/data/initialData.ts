@@ -184,6 +184,33 @@ export const CATEGORIES: Category[] = [
     bgGradient: 'from-blue-700 to-indigo-600',
     popularItems: ['बचत व चालू खाते', 'ठेवी व मुदत ठेव (FD)', 'सोने तारण व व्यवसाय कर्ज', 'पैसे काढणे व भरणे (AEPS)', 'बँक मित्र / CSP सेवा'],
   },
+  {
+    id: 'paan_shop',
+    nameMr: 'पान शॉप, स्नॅक्स व थंड पेये',
+    nameEn: 'Paan Shop, Snacks & Cold Drinks',
+    iconName: 'Coffee',
+    color: 'text-emerald-700',
+    bgGradient: 'from-emerald-600 to-green-700',
+    popularItems: ['मसाला पान', 'गोड (कलकत्ता) पान', 'थंड पेये (Cold Drinks)', 'आईस्क्रीम व कुल्फी', 'वेफर्स व स्नॅक्स', 'सिगारेट व तंबाखू उत्पादने', 'मुखवास व चॉकलेट्स'],
+  },
+  {
+    id: 'tax_consultant',
+    nameMr: 'टॅक्स कन्सल्टंट, CA, GST व आयकर सल्लागार',
+    nameEn: 'Tax Consultant, CA & GST Advisory',
+    iconName: 'Calculator',
+    color: 'text-teal-700',
+    bgGradient: 'from-teal-600 to-emerald-700',
+    popularItems: ['GST नोंदणी व महिना रिटर्न', 'इनकम टॅक्स रिटर्न (ITR Filing)', 'उद्योग आधार / MSME नोंदणी', 'शॉप ॲक्ट / गुमास्ता लायसन्स', 'अकाउंटिंग व टॅली सर्व्हिस', 'बँक लोन प्रोजेक्ट रिपोर्ट'],
+  },
+  {
+    id: 'cctv_security',
+    nameMr: 'सीसीटीव्ही कॅमेरा, सिक्युरिटी व कॉम्प्युटर',
+    nameEn: 'CCTV Camera, Security & Computers',
+    iconName: 'Camera',
+    color: 'text-slate-800',
+    bgGradient: 'from-slate-700 to-zinc-900',
+    popularItems: ['HD व IP सीसीटीव्ही कॅमेरे', 'डीव्हीआर / एनव्हीआर व हार्ड डिस्क', 'मोबाईलवर लाईव्ह व्ह्यू सेटिंग', 'बायोमेट्रिक हजेरी मशीन', 'कॉम्प्युटर व लॅपटॉप रिपेअरिंग', 'वायफाय व नेटवर्किंग'],
+  },
 ];
 
 export const WORKER_PROFESSIONS: WorkerProfession[] = [
