@@ -1,13 +1,15 @@
 import React from 'react';
-import { Home, Sparkles, UserCheck, PlusCircle, Users, ShieldAlert } from 'lucide-react';
-import { Shop } from '../types';
+import { Home, Sparkles, UserCheck, PlusCircle, Users, ShieldAlert, BadgePercent } from 'lucide-react';
+import { Shop, Agent } from '../types';
 
 interface MobileBottomNavProps {
-  activeTab: 'home' | 'offers' | 'workers' | 'dashboard' | 'admin';
-  setActiveTab: (tab: 'home' | 'offers' | 'workers' | 'dashboard' | 'admin') => void;
+  activeTab: 'home' | 'offers' | 'workers' | 'dashboard' | 'agent' | 'admin';
+  setActiveTab: (tab: 'home' | 'offers' | 'workers' | 'dashboard' | 'agent' | 'admin') => void;
   loggedInShop: Shop | null;
+  loggedInAgent?: Agent | null;
   isAdminLoggedIn: boolean;
   onOpenAuthModal: () => void;
+  onOpenAgentAuthModal?: () => void;
   onOpenAdminLoginModal: () => void;
   isMarathi: boolean;
 }
@@ -16,8 +18,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   activeTab,
   setActiveTab,
   loggedInShop,
+  loggedInAgent,
   isAdminLoggedIn,
   onOpenAuthModal,
+  onOpenAgentAuthModal,
   onOpenAdminLoginModal,
   isMarathi,
 }) => {
@@ -57,8 +61,18 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span className="text-[9px] sm:text-[10px] leading-none font-bold">{isMarathi ? 'कारागीर' : 'Workers'}</span>
         </button>
 
-        {/* Register / Shopkeeper Dashboard */}
-        {loggedInShop ? (
+        {/* Agent or Register / Shopkeeper Dashboard */}
+        {loggedInAgent ? (
+          <button
+            onClick={() => setActiveTab('agent')}
+            className={`flex flex-col items-center gap-0.5 py-1 rounded-xl transition-all cursor-pointer ${
+              activeTab === 'agent' ? 'text-purple-600 font-black' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <BadgePercent className="w-5 h-5 text-purple-600" />
+            <span className="text-[9px] sm:text-[10px] leading-none font-bold">{isMarathi ? 'एजंट' : 'Agent'}</span>
+          </button>
+        ) : loggedInShop ? (
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center gap-0.5 py-1 rounded-xl transition-all cursor-pointer ${

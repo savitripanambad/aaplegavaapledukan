@@ -6,6 +6,8 @@ import { ShopCard } from './components/ShopCard';
 import { ShopDetailModal } from './components/ShopDetailModal';
 import { ShopkeeperAuthModal } from './components/ShopkeeperAuthModal';
 import { ShopkeeperDashboard } from './components/ShopkeeperDashboard';
+import { AgentAuthModal } from './components/AgentAuthModal';
+import { AgentDashboard } from './components/AgentDashboard';
 import { VillageSelectorModal } from './components/VillageSelectorModal';
 import { SavedShopsModal } from './components/SavedShopsModal';
 import { OffersView } from './components/OffersView';
@@ -14,10 +16,11 @@ import { WorkerRegistrationModal } from './components/WorkerRegistrationModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
-import { INITIAL_SHOPS, INITIAL_WORKERS, INITIAL_CLAIMS, CATEGORIES, DISTRICTS } from './data/initialData';
-import { Shop, District, Review, Worker, ClaimRequest } from './types';
-import { Store, PlusCircle, Sparkles, MapPin, Heart, ShieldCheck, Users, ShieldAlert, CloudCheck } from 'lucide-react';
+import { INITIAL_SHOPS, INITIAL_WORKERS, INITIAL_CLAIMS, INITIAL_AGENTS, INITIAL_AGENT_CLAIMS, CATEGORIES, DISTRICTS } from './data/initialData';
+import { Shop, District, Review, Worker, ClaimRequest, Agent, AgentClaimRequest } from './types';
+import { Store, PlusCircle, Sparkles, MapPin, Heart, ShieldCheck, Users, ShieldAlert, CloudCheck, BadgePercent } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { calculateAgentEarnings } from './utils/helpers';
 import {
   subscribeToShops,
   subscribeToWorkers,
@@ -32,13 +35,16 @@ import {
 const STORAGE_SHOPS_KEY = 'aapla_gavatil_dukan_shops_v2';
 const STORAGE_WORKERS_KEY = 'aapla_gavatil_dukan_workers_v2';
 const STORAGE_CLAIMS_KEY = 'aapla_gavatil_dukan_claims_v2';
+const STORAGE_AGENTS_KEY = 'aapla_gavatil_dukan_agents_v2';
+const STORAGE_AGENT_CLAIMS_KEY = 'aapla_gavatil_dukan_agent_claims_v2';
 const STORAGE_SAVED_KEY = 'aapla_gavatil_dukan_saved_v2';
 const STORAGE_USER_SHOP_KEY = 'aapla_gavatil_dukan_logged_shop_v2';
+const STORAGE_USER_AGENT_KEY = 'aapla_gavatil_dukan_logged_agent_v2';
 const STORAGE_ADMIN_KEY = 'aapla_gavatil_dukan_admin_v2';
 
 export default function App() {
   const [isMarathi, setIsMarathi] = useState(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'offers' | 'workers' | 'dashboard' | 'admin'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'offers' | 'workers' | 'dashboard' | 'agent' | 'admin'>('home');
 
   // Shops State with LocalStorage
   const [shops, setShops] = useState<Shop[]>(() => {
@@ -73,6 +79,28 @@ export default function App() {
     return INITIAL_CLAIMS;
   });
 
+  // Agents State with LocalStorage
+  const [agents, setAgents] = useState<Agent[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_AGENTS_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch (e) {
+      console.error('Error reading localStorage agents:', e);
+    }
+    return INITIAL_AGENTS;
+  });
+
+  // Agent Claims State with LocalStorage
+  const [agentClaims, setAgentClaims] = useState<AgentClaimRequest[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_AGENT_CLAIMS_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch (e) {
+      console.error('Error reading localStorage agent claims:', e);
+    }
+    return INITIAL_AGENT_CLAIMS;
+  });
+
   // Saved / Bookmarked shops
   const [savedShopIds, setSavedShopIds] = useState<string[]>(() => {
     try {
@@ -88,6 +116,15 @@ export default function App() {
   const [loggedInShopId, setLoggedInShopId] = useState<string | null>(() => {
     try {
       return localStorage.getItem(STORAGE_USER_SHOP_KEY) || null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Logged-in Agent ID
+  const [loggedInAgentId, setLoggedInAgentId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(STORAGE_USER_AGENT_KEY) || null;
     } catch {
       return null;
     }
@@ -116,6 +153,7 @@ export default function App() {
   const [selectedShopForModal, setSelectedShopForModal] = useState<Shop | null>(null);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAgentAuthModal, setShowAgentAuthModal] = useState(false);
   const [showSavedModal, setShowSavedModal] = useState(false);
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const [showWorkerRegModal, setShowWorkerRegModal] = useState(false);
@@ -182,6 +220,22 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(STORAGE_AGENTS_KEY, JSON.stringify(agents));
+    } catch (e) {
+      console.error('Error saving agents:', e);
+    }
+  }, [agents]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_AGENT_CLAIMS_KEY, JSON.stringify(agentClaims));
+    } catch (e) {
+      console.error('Error saving agent claims:', e);
+    }
+  }, [agentClaims]);
+
+  useEffect(() => {
+    try {
       if (loggedInShopId) {
         localStorage.setItem(STORAGE_USER_SHOP_KEY, loggedInShopId);
       } else {
@@ -191,6 +245,18 @@ export default function App() {
       console.error('Error storing user shop:', e);
     }
   }, [loggedInShopId]);
+
+  useEffect(() => {
+    try {
+      if (loggedInAgentId) {
+        localStorage.setItem(STORAGE_USER_AGENT_KEY, loggedInAgentId);
+      } else {
+        localStorage.removeItem(STORAGE_USER_AGENT_KEY);
+      }
+    } catch (e) {
+      console.error('Error storing user agent:', e);
+    }
+  }, [loggedInAgentId]);
 
   useEffect(() => {
     try {
@@ -204,6 +270,11 @@ export default function App() {
     if (!loggedInShopId) return null;
     return shops.find((s) => s.id === loggedInShopId) || null;
   }, [loggedInShopId, shops]);
+
+  const loggedInAgent = useMemo(() => {
+    if (!loggedInAgentId) return null;
+    return agents.find((a) => a.id === loggedInAgentId) || null;
+  }, [loggedInAgentId, agents]);
 
   // Toggle bookmark / save
   const handleToggleSave = (shopId: string) => {
@@ -246,6 +317,26 @@ export default function App() {
       const exists = prev.some((s) => s.id === shop.id);
       return exists ? prev.map((s) => (s.id === shop.id ? shop : s)) : [shop, ...prev];
     });
+
+    // Credit Agent if registered with valid Agent Referral Code
+    if (shop.referredByAgentCode && shop.referredByAgentCode.trim()) {
+      const refCode = shop.referredByAgentCode.trim().toUpperCase();
+      setAgents((prevAgents) =>
+        prevAgents.map((ag) => {
+          if (ag.referralCode.toUpperCase() === refCode) {
+            const updatedReferrals = (ag.totalReferrals || 0) + 1;
+            const updatedEarnings = calculateAgentEarnings(updatedReferrals);
+            return {
+              ...ag,
+              totalReferrals: updatedReferrals,
+              totalEarnings: updatedEarnings.totalEarnings,
+            };
+          }
+          return ag;
+        })
+      );
+    }
+
     setLoggedInShopId(shop.id);
     setShowAuthModal(false);
     setActiveTab('dashboard');
@@ -255,6 +346,76 @@ export default function App() {
   const handleLogout = () => {
     setLoggedInShopId(null);
     setActiveTab('home');
+  };
+
+  // Agent Login / Logout handlers
+  const handleAgentLoginSuccess = (agent: Agent) => {
+    setAgents((prev) => {
+      const exists = prev.some((a) => a.id === agent.id);
+      return exists ? prev.map((a) => (a.id === agent.id ? agent : a)) : [agent, ...prev];
+    });
+    setLoggedInAgentId(agent.id);
+    setShowAgentAuthModal(false);
+    setActiveTab('agent');
+  };
+
+  const handleAgentLogout = () => {
+    setLoggedInAgentId(null);
+    setActiveTab('home');
+  };
+
+  const handleUpdateAgent = (updated: Agent) => {
+    setAgents((prev) => prev.map((ag) => (ag.id === updated.id ? updated : ag)));
+  };
+
+  // Agent claims earnings
+  const handleAgentClaim = (claim: AgentClaimRequest) => {
+    setAgentClaims((prev) => [claim, ...prev]);
+  };
+
+  // Admin approves / rejects agent payout claim
+  const handleProcessAgentClaim = (claimId: string, status: 'paid' | 'rejected', utr?: string) => {
+    setAgentClaims((prev) =>
+      prev.map((c) => {
+        if (c.id === claimId) {
+          return {
+            ...c,
+            status,
+            utrNumber: utr || c.utrNumber,
+            processedAt: new Date().toISOString(),
+          };
+        }
+        return c;
+      })
+    );
+
+    // If paid, add to agent's claimedAmount
+    if (status === 'paid') {
+      const targetClaim = agentClaims.find((c) => c.id === claimId);
+      if (targetClaim) {
+        setAgents((prev) =>
+          prev.map((ag) => {
+            if (ag.id === targetClaim.agentId) {
+              return {
+                ...ag,
+                claimedAmount: (ag.claimedAmount || 0) + targetClaim.amount,
+              };
+            }
+            return ag;
+          })
+        );
+      }
+    }
+  };
+
+  const handleDeleteAgent = (agentId: string) => {
+    setAgents((prev) => prev.filter((a) => a.id !== agentId));
+  };
+
+  const handleApproveAgent = (agentId: string) => {
+    setAgents((prev) =>
+      prev.map((a) => (a.id === agentId ? { ...a, status: 'active' as const } : a))
+    );
   };
 
   // Admin Actions
@@ -441,11 +602,14 @@ export default function App() {
         currentVillage={currentVillage}
         onOpenLocationModal={() => setShowLocationModal(true)}
         onOpenAuthModal={() => setShowAuthModal(true)}
+        onOpenAgentAuthModal={() => setShowAgentAuthModal(true)}
         onOpenSavedModal={() => setShowSavedModal(true)}
         savedShopsCount={savedShopIds.length}
         loggedInShop={loggedInShop}
+        loggedInAgent={loggedInAgent}
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenDashboard={() => setActiveTab('dashboard')}
+        onOpenAgentDashboard={() => setActiveTab('agent')}
         onOpenAdminLoginModal={() => setShowAdminLoginModal(true)}
         onOpenAdminDashboard={() => setActiveTab('admin')}
         activeTab={activeTab}
@@ -461,6 +625,8 @@ export default function App() {
             shops={shops}
             workers={workers}
             claimRequests={claimRequests}
+            agents={agents}
+            agentClaims={agentClaims}
             districts={DISTRICTS}
             categories={CATEGORIES}
             onApproveShop={handleApproveShop}
@@ -471,10 +637,22 @@ export default function App() {
             onDeleteWorker={handleDeleteWorker}
             onUpdateWorker={handleUpdateWorker}
             onProcessClaim={handleProcessClaim}
+            onProcessAgentClaim={handleProcessAgentClaim}
+            onApproveAgent={handleApproveAgent}
+            onDeleteAgent={handleDeleteAgent}
             onLogout={() => {
               setIsAdminLoggedIn(false);
               setActiveTab('home');
             }}
+            isMarathi={isMarathi}
+          />
+        ) : activeTab === 'agent' && loggedInAgent ? (
+          <AgentDashboard
+            agent={loggedInAgent}
+            allShops={shops}
+            onUpdateAgent={handleUpdateAgent}
+            onLogout={handleAgentLogout}
+            onRequestClaim={handleAgentClaim}
             isMarathi={isMarathi}
           />
         ) : activeTab === 'dashboard' && loggedInShop ? (
@@ -609,36 +787,50 @@ export default function App() {
               <div className="max-w-4xl mx-auto text-center space-y-4 relative z-10">
                 <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3.5 py-1 rounded-full text-xs font-bold border border-white/20">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>{isMarathi ? 'महाराष्ट्र डिजिटल व्यापारी व कामगार अभियान' : 'Maharashtra Digital Merchant & Artisan Mission'}</span>
+                  <span>{isMarathi ? 'महाराष्ट्र डिजिटल व्यापारी, कामगार व एजंट अभियान' : 'Maharashtra Digital Merchant, Artisan & Agent Mission'}</span>
                 </div>
 
                 <h3 className="text-2xl sm:text-3xl font-black font-['Noto_Sans_Devanagari',sans-serif]">
                   {isMarathi
-                    ? 'आपण दुकानदार किंवा कुशल कारागीर आहात का? आजच नोंदणी करा!'
-                    : 'Are you a shopkeeper or skilled worker? Take your business online today!'}
+                    ? 'आपण दुकानदार, कारागीर किंवा एजंट आहात का? आजच जुडा!'
+                    : 'Are you a shopkeeper, artisan, or field agent? Join us today!'}
                 </h3>
 
                 <p className="text-xs sm:text-sm text-orange-100 max-w-2xl mx-auto font-medium">
                   {isMarathi
-                    ? 'दुकानदारांसाठी ₹११ नोंदणी शुल्क (१ आठवडा मोफत). कामगारांसाठी मोफत नोंदणी. थेट व्हॉट्सॲपवरून ग्राहकांशी जोडा!'
-                    : 'Register your shop or service in 2 minutes. Receive direct WhatsApp enquiries from nearby customers.'}
+                    ? 'दुकानदारांसाठी ₹११ नोंदणी शुल्क (१ आठवडा मोफत). कामगारांसाठी मोफत नोंदणी. एजंट्सना प्रत्येक दुकान जोडणीवर ₹३ + दर ५० दुकानांमागे ₹१०० बोनस!'
+                    : 'Register your shop for ₹11 (1 week free), worker service for free, or become a Village Agent and earn ₹3 per shop + ₹100 bonus on 50 shops.'}
                 </p>
 
                 <div className="pt-2 flex flex-wrap justify-center gap-3">
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="px-6 py-3.5 rounded-2xl bg-white hover:bg-orange-50 text-slate-900 font-extrabold text-sm sm:text-base shadow-xl transition-all cursor-pointer hover:scale-105 inline-flex items-center gap-2"
+                    className="px-5 py-3.5 rounded-2xl bg-white hover:bg-orange-50 text-slate-900 font-extrabold text-xs sm:text-sm shadow-xl transition-all cursor-pointer hover:scale-105 inline-flex items-center gap-2"
                   >
-                    <PlusCircle className="w-5 h-5 text-orange-600" />
+                    <PlusCircle className="w-4 h-4 text-orange-600" />
                     <span>{isMarathi ? 'दुकानदार नोंदणी (१ आठवडा मोफत)' : 'Register Shopkeeper'}</span>
                   </button>
 
                   <button
                     onClick={() => setShowWorkerRegModal(true)}
-                    className="px-6 py-3.5 rounded-2xl bg-indigo-900/80 hover:bg-indigo-900 text-white font-extrabold text-sm sm:text-base shadow-xl transition-all cursor-pointer hover:scale-105 inline-flex items-center gap-2 border border-indigo-300/30"
+                    className="px-5 py-3.5 rounded-2xl bg-indigo-900/80 hover:bg-indigo-900 text-white font-extrabold text-xs sm:text-sm shadow-xl transition-all cursor-pointer hover:scale-105 inline-flex items-center gap-2 border border-indigo-300/30"
                   >
-                    <Users className="w-5 h-5 text-indigo-300" />
-                    <span>{isMarathi ? 'कामगार / कारागीर नोंदणी (मोफत)' : 'Register Artisan'}</span>
+                    <Users className="w-4 h-4 text-indigo-300" />
+                    <span>{isMarathi ? 'कामगार नोंदणी (मोफत)' : 'Register Artisan'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (loggedInAgent) {
+                        setActiveTab('agent');
+                      } else {
+                        setShowAgentAuthModal(true);
+                      }
+                    }}
+                    className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-extrabold text-xs sm:text-sm shadow-xl transition-all cursor-pointer hover:scale-105 inline-flex items-center gap-2"
+                  >
+                    <BadgePercent className="w-4 h-4 text-slate-950 stroke-[2.5]" />
+                    <span>{isMarathi ? '🎯 एजंट व्हा (₹ कमवा)' : 'Become an Agent'}</span>
                   </button>
                 </div>
               </div>
@@ -689,6 +881,19 @@ export default function App() {
               {isAdminLoggedIn ? 'अ‍ॅडमिन पॅनेल' : 'अ‍ॅडमिन प्रवेश'}
             </button>
             <span>•</span>
+            <button
+              onClick={() => {
+                if (loggedInAgent) {
+                  setActiveTab('agent');
+                } else {
+                  setShowAgentAuthModal(true);
+                }
+              }}
+              className="text-purple-400 hover:text-purple-300 underline font-bold cursor-pointer"
+            >
+              {isMarathi ? 'एजंट पोर्टल' : 'Agent Portal'}
+            </button>
+            <span>•</span>
             <span>© २०२६ आपलं गावातील दुकान</span>
           </div>
         </div>
@@ -699,8 +904,10 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         loggedInShop={loggedInShop}
+        loggedInAgent={loggedInAgent}
         isAdminLoggedIn={isAdminLoggedIn}
         onOpenAuthModal={() => setShowAuthModal(true)}
+        onOpenAgentAuthModal={() => setShowAgentAuthModal(true)}
         onOpenAdminLoginModal={() => setShowAdminLoginModal(true)}
         isMarathi={isMarathi}
       />
@@ -724,6 +931,16 @@ export default function App() {
           allShops={shops}
           categories={CATEGORIES}
           districts={DISTRICTS}
+          isMarathi={isMarathi}
+        />
+      )}
+
+      {showAgentAuthModal && (
+        <AgentAuthModal
+          onClose={() => setShowAgentAuthModal(false)}
+          onLoginSuccess={handleAgentLoginSuccess}
+          districts={DISTRICTS}
+          allAgents={agents}
           isMarathi={isMarathi}
         />
       )}

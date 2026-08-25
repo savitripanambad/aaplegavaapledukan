@@ -53,8 +53,55 @@ export const APP_OWNER_INFO = {
 export const REGISTRATION_ORIGINAL_PRICE = 110;
 export const REGISTRATION_DISCOUNTED_PRICE = 11;
 
-export const REFERRAL_REWARD_PER_SHOP = 1; // ₹1 earned per referral
+// Shopkeeper referral settings
+export const REFERRAL_REWARD_PER_SHOP = 1; // ₹1 earned per referral for shops
 export const REFERRAL_CLAIM_THRESHOLD = 50; // Claim payout once ₹50 is accumulated
+
+// Agent Panel & Referral System settings
+export const AGENT_REGISTRATION_FEE = 51; // ₹51 registration/joining fee for Agents
+export const AGENT_REFERRAL_REWARD = 3; // Agent earns ₹3 per successful referral
+export const AGENT_BONUS_REFERRAL_THRESHOLD = 50; // 50 referrals
+export const AGENT_BONUS_AMOUNT = 100; // Special ₹100 bonus on every 50 referrals
+export const AGENT_MIN_CLAIM_AMOUNT = 10; // Minimum claim threshold for agents
+
+/**
+ * Calculate total agent earnings based on referral count
+ * e.g. 50 referrals = 50 * 3 + 100 = ₹250
+ */
+export function calculateAgentEarnings(referralCount: number): {
+  baseEarnings: number;
+  bonusEarnings: number;
+  totalEarnings: number;
+  completedMilestones: number;
+  nextMilestoneRemaining: number;
+} {
+  const baseEarnings = referralCount * AGENT_REFERRAL_REWARD;
+  const completedMilestones = Math.floor(referralCount / AGENT_BONUS_REFERRAL_THRESHOLD);
+  const bonusEarnings = completedMilestones * AGENT_BONUS_AMOUNT;
+  const totalEarnings = baseEarnings + bonusEarnings;
+  const nextMilestoneRemaining = AGENT_BONUS_REFERRAL_THRESHOLD - (referralCount % AGENT_BONUS_REFERRAL_THRESHOLD);
+
+  return {
+    baseEarnings,
+    bonusEarnings,
+    totalEarnings,
+    completedMilestones,
+    nextMilestoneRemaining: nextMilestoneRemaining === 0 ? AGENT_BONUS_REFERRAL_THRESHOLD : nextMilestoneRemaining,
+  };
+}
+
+/**
+ * Auto generates a clean, unique Agent referral code (e.g. AGT-SAT-8492)
+ */
+export function generateAgentReferralCode(prefix: string = 'AGT'): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let rand = '';
+  for (let i = 0; i < 4; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  const cleanPrefix = (prefix || 'AGT').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 3);
+  return `AGT-${cleanPrefix || 'MH'}-${rand}`;
+}
 
 /**
  * Auto generates a clean, unique referral code (e.g., REF-SAT-8492 or REF-KIR-5931)

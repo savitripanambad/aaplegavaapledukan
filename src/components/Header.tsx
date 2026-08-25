@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Store, MapPin, Sparkles, Heart, PlusCircle, UserCheck, ShieldCheck, Users, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
-import { District, Shop } from '../types';
+import { Store, MapPin, Sparkles, Heart, PlusCircle, UserCheck, ShieldCheck, Users, ShieldAlert, Volume2, VolumeX, BadgePercent } from 'lucide-react';
+import { District, Shop, Agent } from '../types';
 import { playMarathiVoiceGreeting } from '../utils/audioGreeting';
 
 interface HeaderProps {
@@ -11,12 +11,15 @@ interface HeaderProps {
   onOpenSavedModal: () => void;
   savedShopsCount: number;
   loggedInShop: Shop | null;
+  loggedInAgent?: Agent | null;
   isAdminLoggedIn: boolean;
   onOpenDashboard: () => void;
+  onOpenAgentDashboard?: () => void;
+  onOpenAgentAuthModal?: () => void;
   onOpenAdminLoginModal: () => void;
   onOpenAdminDashboard: () => void;
-  activeTab: 'home' | 'offers' | 'workers' | 'dashboard' | 'admin';
-  setActiveTab: (tab: 'home' | 'offers' | 'workers' | 'dashboard' | 'admin') => void;
+  activeTab: 'home' | 'offers' | 'workers' | 'dashboard' | 'agent' | 'admin';
+  setActiveTab: (tab: 'home' | 'offers' | 'workers' | 'dashboard' | 'agent' | 'admin') => void;
   isMarathi: boolean;
   setIsMarathi: (val: boolean) => void;
 }
@@ -29,8 +32,11 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSavedModal,
   savedShopsCount,
   loggedInShop,
+  loggedInAgent,
   isAdminLoggedIn,
   onOpenDashboard,
+  onOpenAgentDashboard,
+  onOpenAgentAuthModal,
   onOpenAdminLoginModal,
   onOpenAdminDashboard,
   activeTab,
@@ -55,6 +61,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
+            {/* Agent Link in Top Bar */}
+            <button
+              onClick={loggedInAgent ? onOpenAgentDashboard : onOpenAgentAuthModal}
+              className="text-[11px] bg-purple-900/60 hover:bg-purple-900 text-purple-200 border border-purple-400/40 px-2 py-0.5 rounded flex items-center gap-1 font-bold cursor-pointer transition-colors shadow-2xs"
+            >
+              <BadgePercent className="w-3 h-3 text-yellow-300" />
+              <span>{loggedInAgent ? `${loggedInAgent.name} (एजंट)` : '🎯 एजंट पोर्टल (₹ कमवा)'}</span>
+            </button>
+
             <button
               onClick={() => playMarathiVoiceGreeting('आपलं गाव, आपलं दुकान! आपल्या गावातील सर्व दुकाने आणि सेवा आता एकाच ठिकाणी.')}
               className="text-[11px] bg-white/20 hover:bg-white/30 text-white px-2 py-0.5 rounded flex items-center gap-1 font-bold cursor-pointer transition-transform active:scale-95"

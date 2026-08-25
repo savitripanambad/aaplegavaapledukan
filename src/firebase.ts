@@ -85,6 +85,8 @@ export const COLLECTIONS = {
   SHOPS: 'shops',
   WORKERS: 'workers',
   CLAIMS: 'claims',
+  AGENTS: 'agents',
+  AGENT_CLAIMS: 'agent_claims',
   REVIEWS: 'reviews',
   ADMINS: 'admins',
   CONFIG: 'config'

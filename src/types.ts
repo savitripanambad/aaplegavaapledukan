@@ -42,6 +42,59 @@ export interface ClaimRequest {
   requestedAt?: string;
   date?: string;
   status: 'pending' | 'paid' | 'approved' | 'rejected';
+  utrNumber?: string;
+  paidAt?: string;
+}
+
+export interface AgentClaimRequest {
+  id: string;
+  agentId: string;
+  agentName: string;
+  agentMobile: string;
+  amount: number;
+  upiId: string;
+  requestedAt: string;
+  status: 'pending' | 'paid' | 'rejected';
+  utrNumber?: string;
+  paidAt?: string;
+  notes?: string;
+}
+
+export interface Agent {
+  id: string;
+  name: string;
+  mobile: string;
+  email?: string;
+  password?: string;
+  district: string;
+  taluka?: string;
+  villageOrCity: string;
+  upiId: string;
+  referralCode: string; // e.g. AGT-SAT-4921
+  joinedDate: string;
+  isPaid: boolean; // ₹51 registration fee
+  paymentDetails?: {
+    amount: number;
+    date: string;
+    time: string;
+    upiId: string;
+    utrNumber?: string;
+    status: 'completed' | 'pending';
+  };
+  approvalStatus: 'approved' | 'pending' | 'rejected';
+  totalReferrals: number;
+  totalEarnings: number; // ₹3 per shop + ₹100 bonus on each 50 referrals
+  claimedAmount: number;
+  claimRequests?: AgentClaimRequest[];
+  referredShops?: {
+    shopId: string;
+    shopName: string;
+    ownerName?: string;
+    mobile?: string;
+    date: string;
+    amountEarned: number;
+    status: 'approved' | 'pending';
+  }[];
 }
 
 export interface Shop {
@@ -98,6 +151,8 @@ export interface Shop {
   gstNumber?: string;
   referralCode?: string;
   referredBy?: string;
+  referredByAgentCode?: string;
+  customCategoryName?: string;
   referralEarnings?: number; // ₹1 per referred shop
   referralCount?: number;
   claimRequests?: ClaimRequest[];

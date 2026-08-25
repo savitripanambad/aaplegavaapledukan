@@ -1,4 +1,4 @@
-import { Category, District, Shop, Worker, WorkerProfession, ClaimRequest } from '../types';
+import { Category, District, Shop, Worker, WorkerProfession, ClaimRequest, Agent, AgentClaimRequest } from '../types';
 import { MAHARASHTRA_DISTRICTS } from './maharashtraData';
 
 export const DISTRICTS: District[] = MAHARASHTRA_DISTRICTS;
@@ -205,6 +205,15 @@ export const WORKER_PROFESSIONS: WorkerProfession[] = [
     bgGradient: 'from-green-600 to-emerald-600',
     popularWork: ['नांगरट व रोटावेटर चालवणे', 'ऊस व शेतमाल वाहतूक', 'पेरणी यंत्र चालवणे', 'जेसीबी / हार्वेस्टर ऑपरेटर'],
   },
+  {
+    id: 'other',
+    nameMr: 'इतर / नवीन व्यवसाय',
+    nameEn: 'Other / Custom Business',
+    iconName: 'Sparkles',
+    color: 'text-purple-700',
+    bgGradient: 'from-purple-600 to-indigo-500',
+    popularWork: ['विविध कामे व सेवा'],
+  },
 ];
 
 // Pure user-driven directory with zero fake/demo listings as requested
@@ -213,3 +222,7 @@ export const INITIAL_WORKERS: Worker[] = [];
 export const INITIAL_SHOPS: Shop[] = [];
 
 export const INITIAL_CLAIMS: ClaimRequest[] = [];
+
+export const INITIAL_AGENTS: Agent[] = [];
+
+export const INITIAL_AGENT_CLAIMS: AgentClaimRequest[] = [];
