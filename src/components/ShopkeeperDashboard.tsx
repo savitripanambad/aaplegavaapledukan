@@ -33,6 +33,7 @@ import { Shop, Offer, SalesRecord, ClaimRequest } from '../types';
 import { formatCurrencyINR, getMarathiDateString, REFERRAL_REWARD_PER_SHOP, REFERRAL_CLAIM_THRESHOLD, getUpiPaymentUrl } from '../utils/helpers';
 import { downloadMarathiShopCertificate } from '../utils/pdfExport';
 import { QRCodeDisplay } from './QRCodeDisplay';
+import { ShopkeeperProfileEdit } from './ShopkeeperProfileEdit';
 import confetti from 'canvas-confetti';
 
 interface ShopkeeperDashboardProps {
@@ -66,19 +67,6 @@ export const ShopkeeperDashboard: React.FC<ShopkeeperDashboardProps> = ({
   const [offerDesc, setOfferDesc] = useState('');
   const [offerValidTill, setOfferValidTill] = useState('३१ डिसेंबर २०२६');
   const [offerBadge, setOfferBadge] = useState('खास ऑफर');
-
-  // Profile Edit State
-  const [editOwner, setEditOwner] = useState(shop.ownerName);
-  const [editMarathiName, setEditMarathiName] = useState(shop.marathiName);
-  const [editUsername, setEditUsername] = useState(shop.username || '');
-  const [editMobile, setEditMobile] = useState(shop.mobile);
-  const [editEmail, setEditEmail] = useState(shop.email || '');
-  const [editPassword, setEditPassword] = useState(shop.password || '');
-  const [editAddress, setEditAddress] = useState(shop.fullAddress);
-  const [editHours, setEditHours] = useState(shop.openingHours);
-  const [editUpi, setEditUpi] = useState(shop.upiId || '');
-  const [editGst, setEditGst] = useState(shop.gstNumber || '');
-  const [profileSaved, setProfileSaved] = useState(false);
 
   // Referral Claim State
   const [claimUpi, setClaimUpi] = useState(shop.upiId || '');
@@ -163,26 +151,6 @@ export const ShopkeeperDashboard: React.FC<ShopkeeperDashboardProps> = ({
       offers: (shop.offers || []).filter((o) => o.id !== offerId),
     };
     onUpdateShop(updatedShop);
-  };
-
-  const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    const updatedShop: Shop = {
-      ...shop,
-      ownerName: editOwner,
-      marathiName: editMarathiName,
-      username: editUsername.trim().toLowerCase() || undefined,
-      mobile: editMobile.trim(),
-      email: editEmail.trim() || undefined,
-      password: editPassword.trim() || shop.password,
-      fullAddress: editAddress,
-      openingHours: editHours,
-      upiId: editUpi || undefined,
-      gstNumber: editGst.trim() ? editGst.trim().toUpperCase() : undefined,
-    };
-    onUpdateShop(updatedShop);
-    setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 2000);
   };
 
   const handleCopyReferralCode = () => {
@@ -1001,165 +969,11 @@ export const ShopkeeperDashboard: React.FC<ShopkeeperDashboardProps> = ({
 
       {/* TAB 5: Edit Profile */}
       {activeTab === 'profile' && (
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="font-black text-base text-slate-900 border-b border-slate-100 pb-3">
-            {isMarathi ? 'दुकानाची माहिती अपडेट करा' : 'Edit Shop Profile'}
-          </h3>
-
-          {profileSaved && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl text-center flex items-center justify-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-600" />
-              <span>{isMarathi ? 'माहिती यशस्वीपणे जतन केली!' : 'Profile updated successfully!'}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSaveProfile} className="space-y-4">
-            {/* Login Credentials Card */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div className="flex items-center gap-2 font-bold text-xs text-slate-800 border-b border-slate-200 pb-2">
-                <Lock className="w-4 h-4 text-orange-600" />
-                <span>{isMarathi ? 'दुकानदार लॉगिन तपशील (Credentials)' : 'Shop Login Credentials'}</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    {isMarathi ? 'युजरनेम (Username)' : 'Username'}
-                  </label>
-                  <input
-                    type="text"
-                    value={editUsername}
-                    onChange={(e) => setEditUsername(e.target.value.toLowerCase().replace(/\s+/g, '_'))}
-                    placeholder="savitri_kirana"
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900 font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    {isMarathi ? 'मोबाईल नंबर' : 'Mobile Number'}
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={editMobile}
-                    onChange={(e) => setEditMobile(e.target.value.replace(/\D/g, ''))}
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900 font-semibold"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    {isMarathi ? 'ईमेल आयडी (Email ID)' : 'Email ID'}
-                  </label>
-                  <input
-                    type="email"
-                    value={editEmail}
-                    onChange={(e) => setEditEmail(e.target.value)}
-                    placeholder="shop@gmail.com"
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    {isMarathi ? 'लॉगिन पासवर्ड (Password)' : 'Login Password'}
-                  </label>
-                  <input
-                    type="text"
-                    value={editPassword}
-                    onChange={(e) => setEditPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900 font-mono"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isMarathi ? 'दुकानाचे नाव' : 'Shop Name'}
-              </label>
-              <input
-                type="text"
-                value={editMarathiName}
-                onChange={(e) => setEditMarathiName(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isMarathi ? 'संचालकाचे नाव' : 'Owner Name'}
-              </label>
-              <input
-                type="text"
-                value={editOwner}
-                onChange={(e) => setEditOwner(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isMarathi ? 'संपूर्ण पत्ता' : 'Full Address'}
-              </label>
-              <input
-                type="text"
-                value={editAddress}
-                onChange={(e) => setEditAddress(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {isMarathi ? 'कामाची वेळ' : 'Opening Hours'}
-                </label>
-                <input
-                  type="text"
-                  value={editHours}
-                  onChange={(e) => setEditHours(e.target.value)}
-                  className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {isMarathi ? 'UPI आयडी' : 'UPI ID'}
-                </label>
-                <input
-                  type="text"
-                  value={editUpi}
-                  onChange={(e) => setEditUpi(e.target.value)}
-                  className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 font-mono text-slate-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isMarathi ? 'GST नंबर (ऐच्छिक)' : 'GSTIN (Optional)'}
-              </label>
-              <input
-                type="text"
-                value={editGst}
-                onChange={(e) => setEditGst(e.target.value)}
-                placeholder="27AAAAA0000A1Z5"
-                className="w-full px-3 py-2 text-xs sm:text-sm font-mono uppercase rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500/40 text-slate-900"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <Save className="w-4 h-4" />
-              <span>{isMarathi ? 'बदल जतन करा' : 'Save Changes'}</span>
-            </button>
-          </form>
-        </div>
+        <ShopkeeperProfileEdit
+          shop={shop}
+          onUpdateShop={onUpdateShop}
+          isMarathi={isMarathi}
+        />
       )}
     </div>
   );
